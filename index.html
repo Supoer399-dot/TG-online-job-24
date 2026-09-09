@@ -13,7 +13,7 @@
     body { font-family: 'Hind Siliguri', sans-serif; }
   </style>
 
-  <!-- ================= FIREBASE SDKs (Compat version for Vanilla JS) ================= -->
+  <!-- ================= FIREBASE SDKs ================= -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -22,7 +22,7 @@
 
   <!-- ================= 0. LOGIN & REGISTRATION MODAL ================= -->
   <div id="authModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 md:p-8 shadow-2xl relative">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 md:p-8 shadow-2xl relative max-h-[95vh] overflow-y-auto">
       
       <!-- Logo & Title -->
       <div class="text-center mb-6">
@@ -78,6 +78,17 @@
           </div>
         </div>
 
+        <!-- Registration Referral Code Field (Auto-filled if present in URL) -->
+        <div id="field-ref" class="hidden">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">রেফারেল কোড (ঐচ্ছিক / স্বয়ংক্রিয়)</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <i class="fa-solid fa-gift text-xs"></i>
+            </span>
+            <input type="text" id="auth-ref" placeholder="রেফার কোড থাকলে দিন" class="w-full border border-gray-300 rounded-lg pl-9 p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500 outline-none bg-indigo-50/50">
+          </div>
+        </div>
+
         <!-- Role Options -->
         <div id="role-container">
           <label class="block text-xs font-bold text-gray-700 mb-2">আপনি কোন ধরণের অ্যাকাউন্ট চান? (বাধ্যতামূলক):</label>
@@ -119,7 +130,7 @@
         <span class="text-xl font-bold tracking-wide">TG online Job</span>
       </div>
 
-      <!-- Wallet & Profile Summary (Admin Panel Button Removed) -->
+      <!-- Wallet & Profile Summary -->
       <div class="flex items-center gap-3">
         <div class="bg-indigo-700 px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 border border-indigo-500">
           <i class="fa-solid fa-wallet text-green-400 text-base"></i>
@@ -130,7 +141,7 @@
         <div class="flex items-center gap-2 bg-indigo-800 px-3 py-1 rounded-lg">
           <div class="w-7 h-7 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-xs" id="profile-avatar">U</div>
           <div class="text-left leading-tight hidden md:block">
-            <span class="block text-xs font-bold" id="profile-name">তানভীর</span>
+            <span class="block text-xs font-bold" id="profile-name">ইউজার</span>
             <span class="text-[10px] text-yellow-300 font-semibold" id="profile-role">Worker</span>
           </div>
           <button onclick="handleLogout()" title="লগআউট" class="ml-1 text-red-300 hover:text-red-100 text-xs">
@@ -220,7 +231,7 @@
             <div>
               <span class="bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">রেফারেল প্রোগ্রাম</span>
               <h2 class="text-2xl md:text-3xl font-bold mt-2">বন্ধুদের আমন্ত্রণ জানান ও আয় বাড়ান!</h2>
-              <p class="text-indigo-100 text-sm mt-1">আপনার রেফারেল লিংক দিয়ে জয়েন করিয়ে প্রতি সক্রিয় রেফারে বোনাস এবং আজীবন রেফার কমিশন উপভোগ করুন।</p>
+              <p class="text-indigo-100 text-sm mt-1">আপনার নিচের রেফারেল লিংকটি বন্ধুদের শেয়ার করুন। এই লিংকে ক্লিক করে যে কেউ একাউন্ট খুললে আপনি রেফারেল বোনাস পাবেন।</p>
             </div>
             <div class="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center text-4xl text-yellow-300 shrink-0 border border-white/20">
               <i class="fa-solid fa-gift"></i>
@@ -234,9 +245,9 @@
           </h3>
           
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">আপনার রেফারেল লিংক:</label>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">আপনার রেফারেল লিংক (সরাসরি ওয়েবসাইটে ঢুকবে):</label>
             <div class="flex gap-2">
-              <input type="text" id="worker-ref-link" readonly value="https://tgonlinejob.com/register?ref=TG78945" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs md:text-sm text-gray-700 outline-none font-mono">
+              <input type="text" id="worker-ref-link" readonly value="" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs md:text-sm text-gray-700 outline-none font-mono">
               <button onclick="copyReferralLink()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap shadow">
                 <i class="fa-regular fa-copy"></i> কপি লিংক
               </button>
@@ -247,7 +258,7 @@
             <div class="bg-indigo-50 border border-indigo-100 p-3.5 rounded-xl flex items-center justify-between">
               <div>
                 <span class="text-[11px] text-indigo-800 block">আপনার রেফার কোড:</span>
-                <span class="text-base font-bold text-indigo-900 font-mono" id="worker-ref-code">TG78945</span>
+                <span class="text-base font-bold text-indigo-900 font-mono" id="worker-ref-code">TG10000</span>
               </div>
               <button onclick="copyReferralCode()" class="text-xs text-indigo-600 font-bold hover:underline bg-white px-2.5 py-1 rounded shadow-sm border border-indigo-200">কপি কোড</button>
             </div>
@@ -264,7 +275,7 @@
       </div>
     </section>
 
-    <!-- Worker Wallet & Withdraw (With History) -->
+    <!-- Worker Wallet & Withdraw (With Minimum 100 & 20% Fee) -->
     <section id="section-worker-wallet" class="tab-content hidden">
       <div class="max-w-2xl mx-auto space-y-6">
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -272,7 +283,10 @@
             <i class="fa-solid fa-circle-up text-2xl"></i>
             <h3 class="font-bold text-xl text-gray-800">টাকা উত্তোলন (Worker Withdraw)</h3>
           </div>
-          <p class="text-xs text-gray-500 mb-5">অনুমোদিত কাজের ব্যালেন্স সরাসরি বিকাশ, নগদ বা রকেটে উত্তোলন করুন। অ্যাডমিন যাচাই করে অনুমোদন করলে আপনার একাউন্টে টাকা পৌঁছাবে।</p>
+          <p class="text-xs text-gray-500 mb-5">
+            অনুমোদিত কাজের ব্যালেন্স সরাসরি বিকাশ, নগদ বা রকেটে উত্তোলন করুন। <br>
+            <strong class="text-amber-700">⚠️ সর্বনিম্ন উইথড্র ১০০ টাকা এবং ২০% প্ল্যাটফর্ম সার্ভিস চার্জ কর্তন করা হবে।</strong>
+          </p>
           
           <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-5 flex justify-between items-center">
             <span class="text-xs text-emerald-800 font-medium">উত্তোলনযোগ্য মোট ব্যালেন্স:</span>
@@ -293,9 +307,26 @@
               <input type="text" id="withdraw-account" placeholder="01XXXXXXXXX" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1">টাকার পরিমাণ (৳)</label>
-              <input type="number" id="withdraw-amount" min="50" placeholder="কমপক্ষে ৫০ টাকা" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+              <label class="block text-xs font-medium text-gray-700 mb-1">টাকার পরিমাণ (৳) - সর্বনিম্ন ১০০ টাকা</label>
+              <input type="number" id="withdraw-amount" min="100" placeholder="কমপক্ষে ১০০ টাকা" oninput="calculateWithdrawFee()" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
+
+            <!-- Dynamic Fee Breakdown Calculation Box -->
+            <div id="withdraw-calc-box" class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs space-y-1">
+              <div class="flex justify-between text-gray-600">
+                <span>উত্তোলনের মোট টাকা:</span>
+                <span class="font-bold text-gray-800" id="calc-withdraw-amount">৳ ০.০০</span>
+              </div>
+              <div class="flex justify-between text-amber-700">
+                <span>সার্ভিস চার্জ (২০%):</span>
+                <span class="font-bold" id="calc-withdraw-fee">৳ ০.০০</span>
+              </div>
+              <div class="border-t border-amber-200 pt-1 flex justify-between font-bold text-emerald-800">
+                <span>আপনার একাউন্টে পাঠানো হবে (Net):</span>
+                <span class="text-sm font-extrabold" id="calc-withdraw-net">৳ ০.০০</span>
+              </div>
+            </div>
+
             <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-bold text-sm shadow transition">উইথড্র রিকোয়েস্ট পাঠান</button>
           </form>
         </div>
@@ -566,7 +597,7 @@
     </div>
   </div>
 
-  <!-- ================= FIREBASE LOGIC & APP SCRIPT ================= -->
+  <!-- ================= FIREBASE & APP SCRIPT ================= -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDkrMqGuk1qQR0AU5SnvD9Cj6RoVM_5xmU",
@@ -626,6 +657,22 @@
     let submissions = [];
 
     // ==========================================
+    // ON PAGE LOAD (CHECK REFERRAL URL PARAMETER)
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const refCodeFromUrl = urlParams.get('ref');
+
+      if (refCodeFromUrl) {
+        setAuthMode('register');
+        const refInput = document.getElementById('auth-ref');
+        if (refInput) {
+          refInput.value = refCodeFromUrl;
+        }
+      }
+    });
+
+    // ==========================================
     // AUTHENTICATION
     // ==========================================
     function setAuthMode(mode) {
@@ -633,17 +680,20 @@
       const loginTab = document.getElementById('auth-tab-login');
       const registerTab = document.getElementById('auth-tab-register');
       const nameField = document.getElementById('field-name');
+      const refField = document.getElementById('field-ref');
       const submitBtn = document.getElementById('auth-submit-btn');
 
       if (mode === 'register') {
         registerTab.className = "w-1/2 py-2 text-center font-bold text-sm text-indigo-600 border-b-2 border-indigo-600";
         loginTab.className = "w-1/2 py-2 text-center font-bold text-sm text-gray-400 hover:text-indigo-600";
         nameField.classList.remove('hidden');
+        refField.classList.remove('hidden');
         submitBtn.innerText = "রেজিস্ট্রেশন করুন ও শুরু করুন";
       } else {
         loginTab.className = "w-1/2 py-2 text-center font-bold text-sm text-indigo-600 border-b-2 border-indigo-600";
         registerTab.className = "w-1/2 py-2 text-center font-bold text-sm text-gray-400 hover:text-indigo-600";
         nameField.classList.add('hidden');
+        refField.classList.add('hidden');
         submitBtn.innerText = "প্রবেশ করুন (লগইন)";
       }
     }
@@ -654,6 +704,7 @@
       const password = document.getElementById('auth-pass').value;
       const role = document.querySelector('input[name="userRole"]:checked').value;
       const name = document.getElementById('auth-name').value.trim() || "ইউজার";
+      const referredBy = document.getElementById('auth-ref').value.trim();
       const email = rawInput.includes('@') ? rawInput : `${rawInput}@tgonlinejob.local`;
       const refCode = "TG" + Math.floor(10000 + Math.random() * 90000);
 
@@ -669,6 +720,7 @@
               email: rawInput,
               role,
               refCode,
+              referredBy: referredBy || null,
               balance: 0.00,
               createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
@@ -696,6 +748,7 @@
           email: rawInput,
           role: role,
           refCode: refCode,
+          referredBy: referredBy || null,
           balance: 0.00
         };
       }
@@ -708,11 +761,17 @@
       document.getElementById('profile-avatar').innerText = user.name.charAt(0).toUpperCase();
       document.getElementById('profile-role').innerText = user.role === 'worker' ? 'Worker' : 'Employer';
 
+      const userRefCode = user.refCode || 'TG10000';
       const refCodeElem = document.getElementById('worker-ref-code');
       const refLinkElem = document.getElementById('worker-ref-link');
+      
+      // Dynamic link based on current domain and path
+      const currentOriginPath = window.location.origin + window.location.pathname;
+      const finalRefLink = `${currentOriginPath}?ref=${userRefCode}`;
+
       if (refCodeElem && refLinkElem) {
-        refCodeElem.innerText = user.refCode || 'TG78945';
-        refLinkElem.value = `https://tgonlinejob.com/register?ref=${user.refCode || 'TG78945'}`;
+        refCodeElem.innerText = userRefCode;
+        refLinkElem.value = finalRefLink;
       }
 
       if (user.role === 'employer') {
@@ -802,6 +861,7 @@
         renderJobs();
         renderWorkerSubmissions();
         renderWorkerWithdrawHistory();
+        calculateWithdrawFee();
         switchTab('jobs');
       } else {
         employerNav.classList.remove('hidden');
@@ -817,16 +877,26 @@
     }
 
     // ==========================================
-    // WORKER WITHDRAW
+    // WORKER WITHDRAW (MIN 100, 20% FEE)
     // ==========================================
+    function calculateWithdrawFee() {
+      const amountInput = parseFloat(document.getElementById('withdraw-amount').value) || 0;
+      const fee = amountInput * 0.20;
+      const netAmount = amountInput - fee;
+
+      document.getElementById('calc-withdraw-amount').innerText = `৳ ${amountInput.toFixed(2)}`;
+      document.getElementById('calc-withdraw-fee').innerText = `৳ ${fee.toFixed(2)}`;
+      document.getElementById('calc-withdraw-net').innerText = `৳ ${netAmount > 0 ? netAmount.toFixed(2) : '0.00'}`;
+    }
+
     async function handleWithdraw(e) {
       e.preventDefault();
       const amount = parseFloat(document.getElementById('withdraw-amount').value);
       const method = document.getElementById('withdraw-method').value;
       const account = document.getElementById('withdraw-account').value.trim();
 
-      if (amount < 50) {
-        alert('উত্তোলনের জন্য সর্বনিম্ন ৫০ টাকা হতে হবে!');
+      if (amount < 100) {
+        alert('উত্তোলনের জন্য সর্বনিম্ন ১০০ টাকা হতে হবে!');
         return;
       }
 
@@ -835,11 +905,16 @@
         return;
       }
 
+      const fee = amount * 0.20;
+      const netAmount = amount - fee;
+
       const newWithdraw = {
         uid: currentUser && currentUser.uid ? currentUser.uid : "local_worker",
-        userName: currentUser ? currentUser.name : "তানভীর আহমেদ",
+        userName: currentUser ? currentUser.name : "Worker User",
         userEmail: currentUser ? currentUser.email : "worker@demo.com",
         amount: amount,
+        fee: fee,
+        netAmount: netAmount,
         method: method,
         account: account,
         status: "pending",
@@ -867,8 +942,9 @@
         renderWorkerWithdrawHistory();
       }
 
-      alert(`আপনার ৳${amount} উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!\n\nস্ট্যাটাস: পেন্ডিং (Pending)\nঅ্যাডমিন আপনার অ্যাকাউন্ট নম্বর যাচাই করে টাকা পাঠিয়ে অনুমোদন করলেই স্ট্যাটাস Approved হয়ে যাবে।`);
+      alert(`আপনার ৳${amount} উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!\n\nমূল উইথড্র: ৳${amount.toFixed(2)}\n২০% সার্ভিস চার্জ: ৳${fee.toFixed(2)}\nআপনি একাউন্টে পাবেন: ৳${netAmount.toFixed(2)}\n\nঅ্যাডমিন ভেরিফাই করে টাকা পাঠিয়ে অনুমোদন করলেই স্ট্যাটাস Approved হয়ে যাবে।`);
       e.target.reset();
+      calculateWithdrawFee();
     }
 
     function renderWorkerWithdrawHistory() {
@@ -895,6 +971,8 @@
           badge = `<span class="bg-red-100 text-red-800 text-[11px] px-2.5 py-1 rounded-full font-bold inline-flex items-center gap-1"><i class="fa-solid fa-xmark"></i> বাতিল ও রিফান্ডেড</span>`;
         }
 
+        const net = wth.netAmount ? parseFloat(wth.netAmount).toFixed(2) : (wth.amount * 0.8).toFixed(2);
+
         const div = document.createElement('div');
         div.className = 'py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-gray-50 px-2 rounded-lg';
         div.innerHTML = `
@@ -903,6 +981,7 @@
               <span class="text-sm font-bold text-gray-800">৳ ${parseFloat(wth.amount).toFixed(2)}</span>
               <span class="text-xs text-emerald-600 font-medium">(${wth.method})</span>
             </div>
+            <p class="text-xs text-amber-700 font-semibold mt-0.5">পাবেন (২০% চার্জ বাদে): ৳ ${net}</p>
             <p class="text-xs text-gray-500 font-mono mt-0.5">নাম্বার: <strong>${wth.account}</strong></p>
             <span class="text-[10px] text-gray-400">${wth.dateText || ''}</span>
           </div>
@@ -992,7 +1071,7 @@
     }
 
     // ==========================================
-    // OTHER WORKER / EMPLOYER FUNCTIONS
+    // OTHER APP FUNCTIONS
     // ==========================================
     function renderJobs() {
       const jobList = document.getElementById('job-list');
@@ -1245,7 +1324,7 @@
         updatePendingBadge();
       }
 
-      alert(`ধন্যবাদ! আপনার কাজের প্রমাণসমূহ (${validScreenshots.length}টি স্ক্রিনশট) জমা দেওয়া হয়েছে।\n\nস্ট্যাটাস: পেন্ডিং (Pending)\nEmployer প্রমাণ যাচাই করে Approve করলে আপনার ব্যালেন্সে ৳${rate.toFixed(2)} যোগ হয়ে যাবে।`);
+      alert(`ধন্যবাদ! আপনার কাজের প্রমাণসমূহ (${validScreenshots.length}টি স্ক্রিনশট) জমা দেওয়া হয়েছে।\n\nEmployer প্রমাণ যাচাই করে Approve করলে ব্যালেন্সে ৳${rate.toFixed(2)} যোগ হয়ে যাবে।`);
       closeSubmitModal();
     }
 
@@ -1439,12 +1518,12 @@
       const totalCost = baseCost + platformCharge;
 
       if (baseCost < 100) {
-        alert('কাজের মূল বাজেট কমপক্ষে ১০০ টাকা হতে হবে! অনুগ্রহ করে পারিশ্রমিক বা কর্মীর সংখ্যা বৃদ্ধি করুন।');
+        alert('কাজের মূল বাজেট কমপক্ষে ১০০ টাকা হতে হবে!');
         return;
       }
 
       if (employerBalance < totalCost) {
-        alert(`আপনার পর্যাপ্ত ডিপোজিট ব্যালেন্স নেই! মোট খরচ (৪০% চার্জসহ): ৳${totalCost.toFixed(2)}, আপনার বর্তমান ব্যালেন্স: ৳${employerBalance.toFixed(2)}। দয়া করে ডিপোজিট করুন।`);
+        alert(`আপনার পর্যাপ্ত ব্যালেন্স নেই! মোট খরচ (৪০% চার্জসহ): ৳${totalCost.toFixed(2)}, আপনার ব্যালেন্স: ৳${employerBalance.toFixed(2)}।`);
         switchTab('employer-wallet');
         return;
       }
@@ -1517,7 +1596,7 @@
       linkInput.select();
       linkInput.setSelectionRange(0, 99999);
       navigator.clipboard.writeText(linkInput.value);
-      alert("রেফারেল লিংক সফলভাবে কপি করা হয়েছে: \n" + linkInput.value);
+      alert("রেফারেল লিংক কপি করা হয়েছে: \n" + linkInput.value);
     }
 
     function copyReferralCode() {
